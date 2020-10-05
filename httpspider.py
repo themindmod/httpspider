@@ -3,13 +3,14 @@
 import requests, subprocess, colored
 from colored import stylize
 #initializing variable
+isittrue = False
 speed = 0
 scelta = ""
 final = []
 counter = 0
 count = 0
 percorso = input("Path of the list:  ")
-desiderio = input("Convert from masscan report? y/n:  ")
+desiderio = input("Convert from masscan report? (Linux Only) y/n:  ")
 ricerca = input("String to search:  ")
 askspeed = input("Fast Scan? y/n:  ")
 #fastscan set the timeout of the get requests
@@ -27,6 +28,7 @@ def func1(x):
 		command3= "for i in $(cat truetemp2.txt) ; do echo \"http://$i\"; done > /tmp/truefinal.txt"
 		modifica3 = subprocess.check_output(command3, shell=True)
 		return "truefinal.txt"
+		isittrue = True
 	else:
 		return percorso
 
@@ -80,7 +82,8 @@ try:
 		for q in final:
 				finalresult.write(q+"\n")
 		finalresult.close()
-	closingcommand = "rm -f truetemp.txt truetemp2.txt truefinal.txt"
-	closingdo = subprocess.check_output(closingcommand, shell=True)
+	if isittrue:
+		closingcommand = "rm -f truetemp.txt truetemp2.txt truefinal.txt"
+		closingdo = subprocess.check_output(closingcommand, shell=True)
 except:
 	print(stylize("[-] Tried to open "+ func1(desiderio)+". File not found. Program Aborted...", colored.fg("red")))

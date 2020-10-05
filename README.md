@@ -6,3 +6,15 @@ Requirements
 
 - python3
 - pip  modules = requests, subprocess, colored
+
+Usage
+
+$ > python3 mylittlespider.py
+or, make it executable (chmod +x mylittlespider.py) and..
+$ > ./mylittlespider
+
+the list containing the Ips must be formatted this way:
+http://ip1
+http://ip2
+
+Program will autoremove \n, so don't worry about

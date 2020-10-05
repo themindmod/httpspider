@@ -31,53 +31,56 @@ def func1(x):
 		return percorso
 
 #open the func1 returned file, clean up from newlines and make a list
-with open(func1(desiderio), "r") as filelista:
-	listone = (filelista.readlines())
-listone2 = []
-for i in listone:
-	i = i.strip("\n")
-	listone2.append(i)
-print(stylize("[+] Loaded "+ str(len(listone2))+" address..", colored.fg("green_3b")))
-splitchoose = input("Want to split the list?  y/n (default n):  ")
-if splitchoose == "y":
-	startindex = input("Start index:  ")
-	endindex = input("End index of " + str(len(listone2))+ " ips  (start at "+ str(startindex)+"): ")
-	while True:
+try:
+	with open(func1(desiderio), "r") as filelista:
+		listone = (filelista.readlines())
+	listone2 = []
+	for i in listone:
+		i = i.strip("\n")
+		listone2.append(i)
+	print(stylize("[+] Loaded "+ str(len(listone2))+" address..", colored.fg("green_3b")))
+	splitchoose = input("Want to split the list?  y/n (default n):  ")
+	if splitchoose == "y":
+		startindex = input("Start index:  ")
+		endindex = input("End index of " + str(len(listone2))+ " ips  (start at "+ str(startindex)+"): ")
+		while True:
+			try:
+				listone3 = listone2[int(startindex):int(endindex)]
+				break
+			except:
+				startindex = input("Invalid index, insert Start index:  ")
+				endindex = input("End index of " + str(len(listone2))+ " ips  (start at "+ str(startindex)+"):  ")
+	else:
+		listone3 = listone2
+	for i in listone3:
+		counter += 1
+		print("Testing the address: " + i + "   Job: "+str(counter)+"/"+str(len(listone3))+ " "+ str(round(1/(int(len(listone3))/counter)*100, 2))+"%"+ stylize("      Found count: "+ str(count), colored.fg("green_3b")))
 		try:
-			listone3 = listone2[int(startindex):int(endindex)]
-			break
+			x = requests.get(i, timeout=speed)
+			print("Status Code: "+ str(x.status_code))
+			y = x.text
+			if y.find(ricerca) != -1:
+				print(stylize("Found "+ricerca+" at address:  " + i, colored.fg("yellow")))
+				final.append(i)
+				count += 1
+			else:
+				print(stylize("Connected, but not found", colored.fg("yellow")))
+			x.close()
+		except requests.ConnectionError:
+			print(stylize("ConnectionError", colored.fg("red")))
 		except:
-			startindex = input("Invalid index, insert Start index:  ")
-			endindex = input("End index of " + str(len(listone2))+ " ips  (start at "+ str(startindex)+"):  ")
-else:
-	listone3 = listone2
-for i in listone3:
-	counter += 1
-	print("Testing the address: " + i + "   Job: "+str(counter)+"/"+str(len(listone3))+ " "+ str(round(1/(int(len(listone3))/counter)*100, 2))+"%"+ stylize("      Found count: "+ str(count), colored.fg("green_3b")))
-	try:
-		x = requests.get(i, timeout=speed)
-		print("Status Code: "+ str(x.status_code))
-		y = x.text
-		if y.find(ricerca) != -1:
-			print(stylize("Found "+ricerca+" at address:  " + i, colored.fg("yellow")))
-			final.append(i)
-			count += 1
-		else:
-			print(stylize("Connected, but not found", colored.fg("yellow")))
-		x.close()
-	except requests.ConnectionError:
-		print(stylize("ConnectionError", colored.fg("red")))
-	except:
-		print(stylize("GenericError", colored.fg("red")))
-if count != 0:
-	print(stylize("IP found:  " + str(count), colored.fg("green_3b")))
-	print(stylize("[+] Data written in "+ ricerca +"-result.txt", colored.fg("green_3b")))
-else:
-	print(stylize("[-] Nothing found :(  nothing to write...", colored.fg("red")))
+			print(stylize("GenericError", colored.fg("red")))
+	if count != 0:
+		print(stylize("IP found:  " + str(count), colored.fg("green_3b")))
+		print(stylize("[+] Data written in "+ ricerca +"-result.txt", colored.fg("green_3b")))
+	else:
+		print(stylize("[-] Nothing found :(  nothing to write...", colored.fg("red")))
 
-with open(ricerca +"-result.txt", "w") as finalresult:
-	for q in final:
-			finalresult.write(q+"\n")
-	finalresult.close()
-closingcommand = "rm -f truetemp.txt truetemp2.txt truefinal.txt"
-closingdo = subprocess.check_output(closingcommand, shell=True)
+	with open(ricerca +"-result.txt", "w") as finalresult:
+		for q in final:
+				finalresult.write(q+"\n")
+		finalresult.close()
+	closingcommand = "rm -f truetemp.txt truetemp2.txt truefinal.txt"
+	closingdo = subprocess.check_output(closingcommand, shell=True)
+except:
+	print(stylize("[-] Tried to open "+ func1(desiderio)+". File not found. Program Aborted...", colored.fg("red")))
